@@ -16,7 +16,7 @@ To develop and test the container image you need:
 
 ## Build and Test
 In order to build and test in your development machine you:
-1. Form your command line navigate to the root of the repo
+1. From your command line navigate to the root of the repo
 2. Run `docker build -f Dockerfile -t joaoasrosa/packer-goss:latest .`
 3. Run `container-structure-test test --image joaoasrosa/packer-goss:latest --config ./command-tests.yaml`
 
