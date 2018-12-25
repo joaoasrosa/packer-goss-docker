@@ -22,4 +22,4 @@ commandTests:
   - name: "packer-provisioner-goss installation"
     command: "which"
     args: ["packer-provisioner-goss"]
-    expectedOutput: ["/usr/packer-provisioner-goss\n"]
+    expectedOutput: ["/bin/packer-provisioner-goss\n"]
