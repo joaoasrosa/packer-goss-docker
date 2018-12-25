@@ -1,0 +1,25 @@
+schemaVersion: "2.0.0"
+
+globalEnvVars:
+  - key: "PATH"
+    value: "/env/bin:$PATH"
+
+commandTests:
+
+# check that the packer binary is in the correct location
+  - name: "packer installation"
+    command: "which"
+    args: ["packer"]
+    expectedOutput: ["/bin/packer\n"]
+
+# check that the packer binary is the correct version
+  - name: "packer version"
+    command: "packer"
+    args: ["--version"]
+    expectedOutput: ["1.3.3"]
+
+# check that the packer-provisioner-goss binary is in the correct location
+  - name: "packer-provisioner-goss installation"
+    command: "which"
+    args: ["packer-provisioner-goss"]
+    expectedOutput: ["/usr/packer-provisioner-goss\n"]
