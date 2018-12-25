@@ -1,0 +1,31 @@
+pool:
+  vmImage: 'Ubuntu 16.04'
+
+variables:
+  imageName: 'joaoasrosa/packer-goss:1.0.$(build.buildId)'
+
+steps:
+- task: Docker@0
+  displayName: 'Build image'
+  inputs:
+    containerregistrytype: 'Container Registry'
+    dockerRegistryConnection: 'Docker Hub'
+    imageName: '$(imageName)'
+    includeLatestTag: true
+
+- script: mkdir ./node_modules && npm install --prefix ./ snyk && ./node_modules/.bin/snyk auth $(snyk-token) && ./node_modules/.bin/snyk test $(imageName) --docker --org=joaoasrosa --file=./Dockerfile
+  displayName: 'Scan for vulnerabilities in the Docker image'
+
+- script: ./node_modules/.bin/snyk auth $(snyk-token) && ./node_modules/.bin/snyk monitor $(imageName) --docker --org=joaoasrosa
+  displayName: 'Monitor vulnerabilities in the Docker image'
+  condition: succeededOrFailed()
+
+- task: Docker@0
+  displayName: 'Push image'
+  inputs:
+    containerregistrytype: 'Container Registry'
+    dockerRegistryConnection: 'Docker Hub'
+    action: 'Push an image'
+    imageName: '$(imageName)'
+    includeLatestTag: true
+  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
