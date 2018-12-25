@@ -6,7 +6,7 @@ ENV PACKER_PROVISIONER_GOSS_VERSION=0.3.0
 
 ADD https://github.com/YaleUniversity/packer-provisioner-goss/releases/download/v${PACKER_PROVISIONER_GOSS_VERSION}/packer-provisioner-goss-v${PACKER_PROVISIONER_GOSS_VERSION}-linux-amd64 ./
 
-RUN apk update && apk upgrade
+RUN apk add --upgrade --no-cache --repository http://dl-cdn.alpinelinux.org/alpine/edge/main git=2.20.1-r0
 RUN mv ./packer-provisioner-goss-v${PACKER_PROVISIONER_GOSS_VERSION}-linux-amd64 /bin/packer-provisioner-goss
 RUN chmod +x /bin/packer-provisioner-goss
 
