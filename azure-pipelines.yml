@@ -6,8 +6,6 @@ variables:
   imageNameMinor: '$(imageNameMajor).3'
   imageNamePatch: '$(imageNameMinor).3'
   imageNameBuild: 'joaoasrosa/packer-goss:1.3.3.$(build.buildId)'
-  
-  
 
 steps:
 - task: Docker@0
