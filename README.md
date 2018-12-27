@@ -20,6 +20,12 @@ In order to build and test in your development machine you:
 2. Run `docker build -f Dockerfile -t joaoasrosa/packer-goss:latest .`
 3. Run `container-structure-test test --image joaoasrosa/packer-goss:latest --config ./command-tests.yaml`
 
+## Usage
+To use the image, on a command line or terminal:
+```shell
+docker run -i -t joaoasrosa/packer-goss:latest <command>
+```
+
 ## Contribute
 If the build and test is sucessful, you can commit the changes to the server (in a branch). After it open the PR for review. Please note that all the commits need to be signed. You can follow the GitHub [instructions](https://help.github.com/articles/signing-commits/).
 
