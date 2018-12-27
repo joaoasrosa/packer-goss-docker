@@ -2,33 +2,90 @@ pool:
   vmImage: 'Ubuntu 16.04'
 
 variables:
-  imageName: 'joaoasrosa/packer-goss:1.0.$(build.buildId)'
+  imageNameMajor: 'joaoasrosa/packer-goss:1'
+  imageNameMinor: '$(imageNameMajor).3'
+  imageNamePatch: '$(imageNameMinor).3'
+  imageNameBuild: 'joaoasrosa/packer-goss:1.3.3.$(build.buildId)'
 
 steps:
 - task: Docker@0
-  displayName: 'Build image'
+  displayName: 'Build image major and latest'
   inputs:
     containerregistrytype: 'Container Registry'
     dockerRegistryConnection: 'Docker Hub'
-    imageName: '$(imageName)'
+    imageName: '$(imageNameMajor)'
     includeLatestTag: true
 
-- script: curl -LO https://storage.googleapis.com/container-structure-test/latest/container-structure-test-linux-amd64 && chmod +x container-structure-test-linux-amd64 && mkdir -p $HOME/bin && export PATH=$PATH:$HOME/bin && mv container-structure-test-linux-amd64 $HOME/bin/container-structure-test && container-structure-test test --image $(imageName) --config ./command-tests.yaml
+- task: Docker@0
+  displayName: 'Build image minor'
+  inputs:
+    containerregistrytype: 'Container Registry'
+    dockerRegistryConnection: 'Docker Hub'
+    imageName: '$(imageNameMinor)'
+    includeLatestTag: false
+
+- task: Docker@0
+  displayName: 'Build image patch'
+  inputs:
+    containerregistrytype: 'Container Registry'
+    dockerRegistryConnection: 'Docker Hub'
+    imageName: '$(imageNamePatch)'
+    includeLatestTag: false
+
+- task: Docker@0
+  displayName: 'Build image build'
+  inputs:
+    containerregistrytype: 'Container Registry'
+    dockerRegistryConnection: 'Docker Hub'
+    imageName: '$(imageNameBuild)'
+    includeLatestTag: false
+
+- script: curl -LO https://storage.googleapis.com/container-structure-test/latest/container-structure-test-linux-amd64 && chmod +x container-structure-test-linux-amd64 && mkdir -p $HOME/bin && export PATH=$PATH:$HOME/bin && mv container-structure-test-linux-amd64 $HOME/bin/container-structure-test && container-structure-test test --image $(imageNameBuild) --config ./command-tests.yaml
   displayName: 'Run container tests'
 
-- script: mkdir -p ./node_modules && npm install --prefix ./ snyk && ./node_modules/.bin/snyk auth $(snyk-token) && ./node_modules/.bin/snyk test $(imageName) --docker --org=joaoasrosa --file=./Dockerfile
+- script: mkdir -p ./node_modules && npm install --prefix ./ snyk && ./node_modules/.bin/snyk auth $(snyk-token) && ./node_modules/.bin/snyk test $(imageNameBuild) --docker --org=joaoasrosa --file=./Dockerfile
   displayName: 'Scan for vulnerabilities in the Docker image'
 
-- script: mkdir -p ./node_modules && ./node_modules/.bin/snyk auth $(snyk-token) && ./node_modules/.bin/snyk monitor $(imageName) --docker --org=joaoasrosa
+- script: mkdir -p ./node_modules && ./node_modules/.bin/snyk auth $(snyk-token) && ./node_modules/.bin/snyk monitor $(imageNameBuild) --docker --org=joaoasrosa
   displayName: 'Monitor vulnerabilities in the Docker image'
   condition: succeededOrFailed()
 
 - task: Docker@0
-  displayName: 'Push image'
+  displayName: 'Push image major and latest'
   inputs:
     containerregistrytype: 'Container Registry'
     dockerRegistryConnection: 'Docker Hub'
     action: 'Push an image'
-    imageName: '$(imageName)'
+    imageName: '$(imageNameMajor)'
     includeLatestTag: true
+  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
+
+- task: Docker@0
+  displayName: 'Push image minor'
+  inputs:
+    containerregistrytype: 'Container Registry'
+    dockerRegistryConnection: 'Docker Hub'
+    action: 'Push an image'
+    imageName: '$(imageNameMinor)'
+    includeLatestTag: false
+  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
+
+- task: Docker@0
+  displayName: 'Push image patch'
+  inputs:
+    containerregistrytype: 'Container Registry'
+    dockerRegistryConnection: 'Docker Hub'
+    action: 'Push an image'
+    imageName: '$(imageNamePatch)'
+    includeLatestTag: false
+  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
+
+- task: Docker@0
+  displayName: 'Push image build'
+  inputs:
+    containerregistrytype: 'Container Registry'
+    dockerRegistryConnection: 'Docker Hub'
+    action: 'Push an image'
+    imageName: '$(imageNameBuild)'
+    includeLatestTag: false
   condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
