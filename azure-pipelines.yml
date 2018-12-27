@@ -9,12 +9,36 @@ variables:
 
 steps:
 - task: Docker@0
-  displayName: 'Build image'
+  displayName: 'Build image major and latest'
   inputs:
     containerregistrytype: 'Container Registry'
     dockerRegistryConnection: 'Docker Hub'
-    imageName: '$(imageNameMajor)' '$(imageNameMinor)' '$(imageNamePatch)' '$(imageNameBuild)'
+    imageName: '$(imageNameMajor)'
     includeLatestTag: true
+
+- task: Docker@0
+  displayName: 'Build image minor'
+  inputs:
+    containerregistrytype: 'Container Registry'
+    dockerRegistryConnection: 'Docker Hub'
+    imageName: '$(imageNameMinor)'
+    includeLatestTag: false
+
+- task: Docker@0
+  displayName: 'Build image patch'
+  inputs:
+    containerregistrytype: 'Container Registry'
+    dockerRegistryConnection: 'Docker Hub'
+    imageName: '$(imageNamePatch)'
+    includeLatestTag: false
+
+- task: Docker@0
+  displayName: 'Build image build'
+  inputs:
+    containerregistrytype: 'Container Registry'
+    dockerRegistryConnection: 'Docker Hub'
+    imageName: '$(imageNameBuild)'
+    includeLatestTag: false
 
 - script: curl -LO https://storage.googleapis.com/container-structure-test/latest/container-structure-test-linux-amd64 && chmod +x container-structure-test-linux-amd64 && mkdir -p $HOME/bin && export PATH=$PATH:$HOME/bin && mv container-structure-test-linux-amd64 $HOME/bin/container-structure-test && container-structure-test test --image $(imageName) --config ./command-tests.yaml
   displayName: 'Run container tests'
@@ -27,11 +51,41 @@ steps:
   condition: succeededOrFailed()
 
 - task: Docker@0
-  displayName: 'Push image'
+  displayName: 'Push image major and latest'
   inputs:
     containerregistrytype: 'Container Registry'
     dockerRegistryConnection: 'Docker Hub'
     action: 'Push an image'
-    imageName: '$(imageNameMajor)' '$(imageNameMinor)' '$(imageNamePatch)' '$(imageNameBuild)'
+    imageName: '$(imageNameMajor)'
     includeLatestTag: true
+  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
+
+- task: Docker@0
+  displayName: 'Push image minor'
+  inputs:
+    containerregistrytype: 'Container Registry'
+    dockerRegistryConnection: 'Docker Hub'
+    action: 'Push an image'
+    imageName: '$(imageNameMinor)'
+    includeLatestTag: false
+  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
+
+- task: Docker@0
+  displayName: 'Push image patch'
+  inputs:
+    containerregistrytype: 'Container Registry'
+    dockerRegistryConnection: 'Docker Hub'
+    action: 'Push an image'
+    imageName: '$(imageNamePatch)'
+    includeLatestTag: false
+  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
+
+- task: Docker@0
+  displayName: 'Push image build'
+  inputs:
+    containerregistrytype: 'Container Registry'
+    dockerRegistryConnection: 'Docker Hub'
+    action: 'Push an image'
+    imageName: '$(imageNameBuild)'
+    includeLatestTag: false
   condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
