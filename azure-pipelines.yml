@@ -9,7 +9,7 @@ variables:
 
 steps:
 - task: Docker@0
-  displayName: 'Build image major and latest'
+  displayName: 'Build image - tags major and latest'
   inputs:
     containerregistrytype: 'Container Registry'
     dockerRegistryConnection: 'Docker Hub'
@@ -17,7 +17,7 @@ steps:
     includeLatestTag: true
 
 - task: Docker@0
-  displayName: 'Build image minor'
+  displayName: 'Build image - tag minor'
   inputs:
     containerregistrytype: 'Container Registry'
     dockerRegistryConnection: 'Docker Hub'
@@ -25,7 +25,7 @@ steps:
     includeLatestTag: false
 
 - task: Docker@0
-  displayName: 'Build image patch'
+  displayName: 'Build image - tag patch'
   inputs:
     containerregistrytype: 'Container Registry'
     dockerRegistryConnection: 'Docker Hub'
@@ -33,7 +33,7 @@ steps:
     includeLatestTag: false
 
 - task: Docker@0
-  displayName: 'Build image build'
+  displayName: 'Build image - tag build'
   inputs:
     containerregistrytype: 'Container Registry'
     dockerRegistryConnection: 'Docker Hub'
@@ -51,7 +51,7 @@ steps:
   condition: succeededOrFailed()
 
 - task: Docker@0
-  displayName: 'Push image major and latest'
+  displayName: 'Push image - tags major and latest'
   inputs:
     containerregistrytype: 'Container Registry'
     dockerRegistryConnection: 'Docker Hub'
@@ -61,7 +61,7 @@ steps:
   condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
 
 - task: Docker@0
-  displayName: 'Push image minor'
+  displayName: 'Push image - tag minor'
   inputs:
     containerregistrytype: 'Container Registry'
     dockerRegistryConnection: 'Docker Hub'
@@ -71,7 +71,7 @@ steps:
   condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
 
 - task: Docker@0
-  displayName: 'Push image patch'
+  displayName: 'Push image - tag patch'
   inputs:
     containerregistrytype: 'Container Registry'
     dockerRegistryConnection: 'Docker Hub'
@@ -81,7 +81,7 @@ steps:
   condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
 
 - task: Docker@0
-  displayName: 'Push image build'
+  displayName: 'Push image - tag build'
   inputs:
     containerregistrytype: 'Container Registry'
     dockerRegistryConnection: 'Docker Hub'
