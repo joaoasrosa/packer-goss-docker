@@ -20,4 +20,6 @@ ADD https://github.com/YaleUniversity/packer-provisioner-goss/releases/download/
 RUN mv ./packer-provisioner-goss-v${PACKER_PROVISIONER_GOSS_VERSION}-linux-amd64 /bin/packer-provisioner-goss
 RUN chmod +x /bin/packer-provisioner-goss
 
+RUN apk add --update --repository http://dl-cdn.alpinelinux.org/alpine/edge/main jq
+
 ENTRYPOINT ["/bin/packer"]
