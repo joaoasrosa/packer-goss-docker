@@ -16,7 +16,7 @@ commandTests:
   - name: "packer version"
     command: "packer"
     args: ["--version"]
-    expectedOutput: ["1.3.3"]
+    expectedOutput: ["1.3.5"]
 
 # check that the packer-provisioner-goss binary is in the correct location
   - name: "packer-provisioner-goss installation"
