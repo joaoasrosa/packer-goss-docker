@@ -1,4 +1,4 @@
-FROM alpine:3.8
+FROM alpine:3.11.6
 LABEL maintainers="João Rosa <joaoasrosa@gmail.com>"
 
 ENV PACKER_VERSION=1.3.5
